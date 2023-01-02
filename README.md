@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	//create a pool with max size 100, task queue size 20, initial size 50
+	//create a pool with max size 10, task queue size 5, initial size 6
 	p := gopool.NewPool(10, 5, 6)
 	fmt.Println("current worker num:", p.WorkerNum())
 	//add task to pool
