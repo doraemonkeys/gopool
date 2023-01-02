@@ -3,7 +3,6 @@ package gopool
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 )
@@ -161,7 +160,7 @@ func (p *Pool) DestoryWorker(num int) (destoryed int) {
 // If timeout, ErrReSetMaxSizeTimeout will be returned.
 // You should not call DestoryWorker actively during the process of calling ReSetMaxSize.
 func (p *Pool) ReSetMaxSize(size int, timeout time.Duration) error {
-	fmt.Println("ReSetMaxSize", size, timeout)
+	//fmt.Println("ReSetMaxSize", size, timeout)
 	if size <= 0 {
 		panic("invalid pool configuration")
 	}
@@ -197,13 +196,13 @@ func (p *Pool) ReSetMaxSize(size int, timeout time.Duration) error {
 		}
 	}()
 	if p.workerNum > size {
-		fmt.Println("ReSetMaxSize", size, timeout, "destory")
+		//fmt.Println("ReSetMaxSize", size, timeout, "destory")
 		destoryed := 0
 		now := time.Now()
 		oldWorkerNum := p.workerNum
 		for {
 			destoryed += p.DestoryWorker(oldWorkerNum - size - destoryed)
-			fmt.Println("ReSetMaxSize", size, timeout, "destory", destoryed)
+			//fmt.Println("ReSetMaxSize", size, timeout, "destory", destoryed)
 			if destoryed == oldWorkerNum-size {
 				break //销毁完成
 			}
@@ -215,7 +214,7 @@ func (p *Pool) ReSetMaxSize(size int, timeout time.Duration) error {
 				for killNum != destoryed {
 					time.Sleep(time.Millisecond * 10)
 				}
-				fmt.Println("destoryed worker num:", destoryed, "killNum:", killNum)
+				//fmt.Println("destoryed worker num:", destoryed, "killNum:", killNum)
 				returnSem <- struct{}{} //结束上面的goroutine
 				p.sem = old
 				return ErrReSetMaxSizeTimeout
@@ -225,9 +224,9 @@ func (p *Pool) ReSetMaxSize(size int, timeout time.Duration) error {
 		for killNum != destoryed {
 			time.Sleep(time.Millisecond * 10)
 		}
-		fmt.Println("destoryed worker num2:", destoryed, "killNum:", killNum)
+		//fmt.Println("destoryed worker num2:", destoryed, "killNum:", killNum)
 	}
-	fmt.Println("ReSetMaxSize", size, timeout, "new")
+	//fmt.Println("ReSetMaxSize", size, timeout, "new")
 	returnSem <- struct{}{} //结束上面的goroutine
 
 	new := make(chan struct{}, size)
